@@ -1,18 +1,13 @@
-import { createStore, applyMiddleware } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import thunk from "redux-thunk";
 import { Provider } from "react-redux";
 import { render } from "react-dom";
+import { configureStore } from "@reduxjs/toolkit";
 
-import rootReducer from "./reducers";
+import rootReducer from "./slices";
 
 import App from "./App";
 import "./index.css";
 
-const store = createStore(
-  rootReducer,
-  composeWithDevTools(applyMiddleware(thunk))
-);
+const store = configureStore({ reducer: rootReducer });
 
 render(
   <Provider store={store}>
