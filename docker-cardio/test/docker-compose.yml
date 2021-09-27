@@ -1,0 +1,77 @@
+version: '3.7'
+
+services:
+  gorouter:
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/gorouter
+    networks:
+      default:
+        aliases:
+        - test.local.philips.com
+    env_file:
+      - .env.gorouter
+  
+  frontend:
+    stdin_open: true
+    tty: true
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/frontend
+    networks:
+        default:
+            aliases:
+              - frontend.apps.internal
+    env_file: .env.frontend
+
+  form-interpreter:
+    stdin_open: true
+    tty: true
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/form-interpreter
+    networks:
+        default:
+          aliases:
+            - form-interpreter.apps.internal
+    env_file:
+      - .env.form-interpreter
+
+  cds-server:
+    stdin_open: true
+    tty: true
+    depends_on:
+      - chadsvasc-service
+      - tee-assessment-service
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/cds-server
+    networks:
+      default:
+        aliases:
+          - cds-server.apps.internal
+    env_file:
+      - .env.cds-server
+
+  chadsvasc-service:
+    stdin_open: true
+    tty: true
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/chadsvasc-service
+    networks:
+      default:
+        aliases:
+          - chadsvasc-service.apps.internal
+
+  tee-assessment-service:
+    stdin_open: true
+    tty: true
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/tee-assessment-service
+    networks:
+      default:
+        aliases:
+          - tee-assessment-service.apps.internal
+
+  pathway:
+    stdin_open: true
+    tty: true
+    image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/pathway
+    networks:
+      default:
+        aliases:
+          - pathway.apps.internal
+    environment:
+      ISPM_PRIVATE_KEY: ${ISPM_PRIVATE_KEY}
+    env_file:
+      - .env.pathway
