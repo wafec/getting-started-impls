@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+
+  service1:
+    image: service1
+    ports:
+      - "8080"
+    networks:
+      default:
+        aliases:
+          - service1.apps.internal
+    build:
+      context: ./service1
+
+  service2:
+    image: service2
+    ports:
+      - "8080"
+    networks:
+      default:
+        aliases:
+          - service2.apps.internal
+    build:
+      context: ./service2
+
+networks:
+  default:
