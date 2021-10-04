@@ -25,4 +25,16 @@ public class Application {
             }
         };
     }
+
+    static class A {
+        public void go() {
+            System.out.println("A");
+        }
+    }
+
+    static class B extends A {
+        public void go() {
+            System.out.println("B");
+        }
+    }
 }
