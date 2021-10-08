@@ -1,0 +1,62 @@
+services:
+  oauth2proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    networks:
+      default:
+        aliases:
+          - oauth2proxy
+    ports:
+      - "443:8043"
+      - "8041:8041"
+    volumes:
+       - ./oauth2-proxy.cfg:/etc/oauth2-proxy.cfg
+    command: --config=/etc/oauth2-proxy.cfg
+    depends_on:
+      - keycloak
+
+  frontend:
+    build: ./apps/frontend
+    ports:
+      - "3000:3000"
+    networks:
+      default:
+        aliases:
+          - frontend
+
+  envoy:
+    image: envoyproxy/envoy-dev
+    ports:
+      - "10000:10000"
+    networks:
+      default:
+        aliases:
+          - envoy
+    depends_on:
+      - oauth2proxy
+      - frontend
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    ports:
+      - "8080:8080"
+    networks:
+      default:
+        aliases:
+          - keycloak
+    volumes:
+      - ./realm-export.json:/tmp/realm-export.json
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/realm-export.json
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://keycloak:8080"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    
+networks:
+  default:

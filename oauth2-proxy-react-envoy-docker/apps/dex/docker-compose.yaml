@@ -1,0 +1,25 @@
+services:
+  server:
+    build: ./server
+    ports:
+      - "5556:5556"
+      - "5558:5558"
+    networks:
+      - default
+    volumes:
+      - ./server/config.yaml:/tmp/config.yaml
+  
+  client:
+    build: ./client
+    ports:
+      - "5555:5555"
+    depends_on:
+      - server
+    networks:
+      - default
+    command: "--issuer http://apps.dex.internal:5556/dex --listen http://0.0.0.0:5555 --redirect-uri http://apps.dex.internal:5555/callback"
+    links:
+      - server:apps.dex.internal
+
+networks:
+  default:
