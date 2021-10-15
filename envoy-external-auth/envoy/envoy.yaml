@@ -25,7 +25,7 @@ static_resources:
               http_service:
                   server_uri:
                     uri: http://external/api/home
-                    cluster:  external
+                    cluster: external
                     timeout: 5s
           - name: envoy.filters.http.router
 
