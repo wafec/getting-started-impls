@@ -1,0 +1,23 @@
+services:
+  envoy:
+    image: envoyproxy/envoy-dev
+    ports:
+      - "10000:10000"
+    networks:
+      default:
+        aliases:
+          - envoy
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+  
+  external:
+    build: ./externalService
+    ports:
+      - "8080:80"
+    networks:
+      default:
+        aliases:
+          - external
+
+networks:
+  default:
