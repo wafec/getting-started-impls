@@ -1,0 +1,21 @@
+
+services:
+  frontend:
+    build: ./frontend
+    networks:
+      default:
+        aliases:
+        - some-app.apps.internal
+    ports:
+    - "3000:3000"
+  backend:
+    build: ./backend
+    networks:
+      default:
+        aliases:
+        - auth-service.apps.internal
+    ports:
+    - "8080:8080"
+
+networks:
+  default:
