@@ -1,0 +1,44 @@
+version: "2.4"
+services:
+  auth:
+    build: ./auth
+    ports:
+      - 8080:8080
+    networks:
+      default:
+        aliases:
+          - auth.localhost
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/.well-known/openid-configuration"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 3s
+  proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    command: --config /oauth2-proxy.cfg
+    ports:
+      - 4180:4180
+    volumes:
+      - ./oauth2-proxy.cfg:/oauth2-proxy.cfg
+    networks:
+      default:
+        aliases:
+          - proxy.localhost
+    depends_on:
+      auth:
+        condition: service_healthy
+      frontend:
+        condition: service_started
+
+  frontend:
+    image: frontend-local
+    ports:
+      - 3000:3000
+    networks:
+      default:
+        aliases:
+          - frontend.localhost
+
+networks:
+  default: {}
