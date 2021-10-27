@@ -4,11 +4,58 @@
 package security;
 
 import org.junit.jupiter.api.Test;
+
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.Keys;
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.UUID;
+
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
 
 class AppTest {
     @Test void appHasAGreeting() {
         App classUnderTest = new App();
         assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    }
+
+    @Test void createJWT() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String privateString = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDZYHrX2FMyiGbspJdRKM4/xVwl/nfQ1lcMJgRBuv9Edlhz+TEWcR9KmoJmr7OjTBHh1YDLK+zkM1TP5GjKKCAkX281AA/ezarLLf+RT29ItkZkG+oaAepv0RoR1OkYgQJHLEHg18JdHT41v8hnjtYhJZsGm2L1r1izJSpGsuAs4I9x3nYsn3qfE7AZdm8MdHT0zaiqMv8UfGzpMffVifgaDtboRJVH2wv49Y4xQRdPZGWwX/Un8I29tjLT29T//Sl17JSi2094hCBMc8QRR+FNPZsOmmgJIxkOda6czArUdzzLNdIsFt7j988g48AxOxwEVGaeIKJ3mFUeaWRPdjXzAgMBAAECggEAL1F7LCUg5y0eCoFBlx8k1mjlyDd+aW1fAXv9DTnhe0uvsX8bGmGBiEHeBPBWUEOs2NYa9R8YsAwkeCSmUustI/3KPWVIDx4CAbx/l2gNN2zGIeCZsxObrr97x0nre7QJhOizZnhRDOfitNyMiU5kek6vUl7cydJjoouCimVBu0K4ATFHejBENiknrSdMSpvOPg/HX2vT1/Z6MdqD1pYp3tIK9xcGFSIQdSp0LFQxsxHrP1k9f0E3z9JSrFMbyumLyhwwCcfBJyOjurcp1YOyUB4NB1TrkXf7LtUZbrQO3q0T6LpKSKBKBKLSD8JERhsfC3Tb4P3j43qsv/dHVKTpIQKBgQDu3vmZmaR1lAclr0bk2t3twmXNlAPzTZZW8HbRvX0bj1+VMlTyvR0ISSYVUV2KY59I5p6xiG1h9YdIi4GpsAmUogd9xjnBp+/WeBkODbGSahwtnj1z79XttfJBtvEQ3rnKwDwww9YxYXD8YrpP7T3CkclSXiiXFl4kRlDtEdduiQKBgQDo9u5TDhYSvsuMNCeL4db4bkTfqLL9NaXpmzCxSibouf0Rq5BvUyWQIuRMycY6bJWWyi1GxcH+lBG6ZPXIuTEC+pWOMfG25Gl04/x0ihLZELQoweevr7j4QqbOxavu0iyoGJLcUkcphwifhKAEVs5+MB0Nwa2FoX7Ote2gVenBmwKBgQDay5g6rjWqkQ0+4l6Ab01KY36WIBbCO/YR6i4bjYJTxS6a3UBcGwbFuSLN8fpJMVkMEFmZacovKRNiSo5Y3GraHtPXy8LJdEbF3rmsWrSk1Na8ni3RzQPZuYeN08DZX/k0EoLPdAH0tzkjpFbdsQOZ/ak27hIl2hIfDd1AWNBIaQKBgAsXNmFd2k8qJiaWlQtjxQgut7iuH1dOpodoi/jkvtV1hUbCFC44lyE1iAjf0kAVy0lSdrVX1NR52B43kDvuFRc/Nr9+QTOjzCF0eSBTMnKDCRCnqpACnZu0EJznbDgCaX3XLaavhBPGCfMOLVAHke0P/VIaVlh2R8MvhhCMBoThAoGAU1k7Gh1sSIBntrUBa/ZlssUGyZpu3fBaRPpGNQ6gCsfFQxNreMPyolX81C1w0Q+Qr2g+Fp07iaob+Mm+i8AaQPuDB6pBAMk7yO9MD0lz3AobP7X85eRKY515QyEXjvu5TQELxZsm+W21I2i+lVAPe4FxF8CXCgKGb132de9ed+0=";
+        String publicString = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2WB619hTMohm7KSXUSjOP8VcJf530NZXDCYEQbr/RHZYc/kxFnEfSpqCZq+zo0wR4dWAyyvs5DNUz+RoyiggJF9vNQAP3s2qyy3/kU9vSLZGZBvqGgHqb9EaEdTpGIECRyxB4NfCXR0+Nb/IZ47WISWbBpti9a9YsyUqRrLgLOCPcd52LJ96nxOwGXZvDHR09M2oqjL/FHxs6TH31Yn4Gg7W6ESVR9sL+PWOMUEXT2RlsF/1J/CNvbYy09vU//0pdeyUottPeIQgTHPEEUfhTT2bDppoCSMZDnWunMwK1Hc8yzXSLBbe4/fPIOPAMTscBFRmniCid5hVHmlkT3Y18wIDAQAB";
+
+        /*KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
+
+        privateString = Encoders.BASE64.encode(keyPair.getPrivate().getEncoded());
+        publicString = Encoders.BASE64.encode(keyPair.getPublic().getEncoded());*/
+
+        byte[] secretBytes = Decoders.BASE64.decode(privateString);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(secretBytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        PrivateKey privateKey = kf.generatePrivate(keySpec);
+        secretBytes = Decoders.BASE64.decode(publicString);
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(secretBytes);
+        kf = KeyFactory.getInstance("RSA"); 
+        PublicKey publicKey = kf.generatePublic(publicKeySpec);
+        JWK jwk = new RSAKey.Builder((RSAPublicKey) publicKey)
+            .privateKey((RSAPrivateKey) privateKey)
+            .keyUse(KeyUse.SIGNATURE)
+            .keyID(UUID.randomUUID().toString())
+            .build();
+        System.out.println(jwk.toJSONString());
     }
 }

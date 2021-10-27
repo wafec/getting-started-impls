@@ -4,6 +4,7 @@
 package security;
 
 import java.security.Key;
+import java.security.KeyPair;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;
@@ -16,8 +17,10 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
-        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        String secretString = Encoders.BASE64.encode(key.getEncoded());
-        System.out.println("SecretKey: " + secretString);
+        KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
+        String privateKey = Encoders.BASE64.encode(keyPair.getPrivate().getEncoded());
+        String publicKey = Encoders.BASE64.encode(keyPair.getPublic().getEncoded());
+        System.out.println("Private: " + privateKey);
+        System.out.println("Public: " + publicKey);
     }
 }
