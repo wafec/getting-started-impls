@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: sample_user
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: sample
+    networks:
+      default:
+        aliases:
+        - mysql.localhost
+    ports:
+    - 3306:3306
+
+  core:
+    build: ./CoreSolution/
+    networks:
+      default:
+        aliases:
+        - app.localhost
+    ports:
+    - 8080:80
+
+networks:
+  default: {}
