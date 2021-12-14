@@ -1,9 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
 
-import ExampleComponent from 'example-react-library';
+import { printMsg } from '@module01/module01';
 
 function App() {
+  printMsg();
+
   return (
     <div className="App">
       <header className="App-header">
@@ -19,7 +21,6 @@ function App() {
         >
           Learn React
         </a>
-        <ExampleComponent text="Test"/>
       </header>
     </div>
   );
