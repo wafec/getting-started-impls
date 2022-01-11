@@ -1,0 +1,1 @@
+https://shopify.engineering/migrating-large-typescript-codebases-project-references

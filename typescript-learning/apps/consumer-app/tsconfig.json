@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        
+    },
+    "references": [
+        { 
+            "path": "../package-a"
+        }
+    ]
+}
