@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs", // output module type, node uses commonjs
+        "outDir": "dist",
+        "esModuleInterop": true, // allows alternate module import import foo from 'foo'
+        "moduleResolution": "node", // mimics node module resolution
+        "sourceMap": true, // output source maps along side js files
+        "baseUrl": ".",
+        "target": "es6"
+    },
+    "include": [
+        "src/**/*"
+    ]
+}

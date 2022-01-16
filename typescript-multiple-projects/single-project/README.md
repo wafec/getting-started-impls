@@ -1,0 +1,1 @@
+https://github.com/microsoft/TypeScript-Node-Starter#pre-reqs
