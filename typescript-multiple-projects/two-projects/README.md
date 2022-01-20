@@ -1,0 +1,1 @@
+https://dev.to/larswaechter/path-aliases-with-typescript-in-nodejs-4353
